@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>SafeDM — Scanner</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="site">
+    <header class="header">
+      <a href="index.html" class="brand">
+        <div class="logo-wrap">
+          <div class="logo-icon" aria-hidden="true">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M12 2l7 3v5c0 5-4 9-7 11-3-2-7-6-7-11V5l7-3z"/>
+              <path d="M12 8.5c1 0 1.8.8 1.8 1.8 0 2.4-3.8 3.9-3.8 3.9s-3.8-1.5-3.8-3.9c0-1 0.8-1.8 1.8-1.8 0.9 0 1.4.6 2 1.2.6-.6 1.1-1.2 2-1.2z" fill="rgba(255,255,255,0.9)"/>
+            </svg>
+          </div>
+          <div>
+            <div class="site-title">SafeDM</div>
+            <div class="site-sub">Digital Harassment Scanner</div>
+          </div>
+        </div>
+      </a>
+
+      <nav class="nav" aria-label="Primary">
+        <a href="about.html">About</a>
+        <a href="resources.html">Resources</a>
+        <a href="scanner.html" class="cta">Open Scanner</a>
+      </nav>
+    </header>
+
+    <main>
+      <section class="scanner">
+        <div class="scanner-grid">
+          <!-- Left: Scan UI -->
+          <div class="scan-box card">
+            <h2 style="color:var(--royal-plum)">Message Scanner</h2>
+            <p style="color:var(--muted);margin-top:6px">Paste any DM or message here and click <strong>Scan</strong>. The detector uses keyword patterns and phrase severity to estimate risk.</p>
+
+            <label for="message" style="display:block;margin-top:12px;font-weight:700;color:var(--muted)">Message</label>
+            <textarea id="message" placeholder="Paste the message here..."></textarea>
+
+            <div style="display:flex;gap:8px;margin-top:12px">
+              <button class="btn" id="scanBtn">Scan Message</button>
+              <button class="btn secondary" id="clearBtn">Clear</button>
+            </div>
+
+            <div id="resultArea" style="margin-top:12px;display:none">
+              <div id="resultPill" class="result">
+                <div class="left">
+                  <div id="dot" class="pulse"></div>
+                  <div>
+                    <div id="resultTitle">Result</div>
+                    <div id="resultDesc" style="font-weight:600;font-size:0.9rem;color:var(--muted)"></div>
+                  </div>
+                </div>
+                <div style="text-align:right">
+                  <div id="actionText" style="font-weight:700;font-size:0.9rem"></div>
+                </div>
+              </div>
+
+              <div class="legend" aria-hidden="true" style="margin-top:10px">
+                <div class="item"><div class="sw" style="background:linear-gradient(90deg,#d6ffea,#e7ffd9)"></div> Green — Safe</div>
+                <div class="item"><div class="sw" style="background:linear-gradient(90deg,#fff6dc,#fff1d6)"></div> Yellow — Caution</div>
+                <div class="item"><div class="sw" style="background:linear-gradient(90deg,#ffd6e6,#ffd9ea)"></div> Red — Harmful</div>
+                <div class="item"><div class="sw" style="background:linear-gradient(90deg,#b56576,#7b2cbf)"></div> Black — Extremely Harmful</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right: Quick tips -->
+          <aside class="card" style="padding:18px">
+            <h3 style="color:var(--royal-plum)">Quick Tips</h3>
+            <p style="color:var(--muted);margin-top:8px">If the message feels off: don't reply, save screenshots, block, and report. If you feel threatened, contact local authorities or trusted support.</p>
+
+            <h4 style="color:var(--royal-plum);margin-top:12px">What the colors mean</h4>
+            <ul style="color:var(--muted);margin-top:8px">
+              <li><strong>Green</strong>: No obvious harmful patterns.</li>
+              <li><strong>Yellow</strong>: Contains suggestive or manipulative phrasing — be cautious.</li>
+
+
+<li><strong>Red</strong>: Contains harassment, pressure, or sexual coercion — consider blocking and reporting.</li>
+              <li><strong>Black</strong>: Explicit threats, grooming language, or clear severe abuse — prioritize safety and seek help.</li>
+            </ul>
+
+            <div style="margin-top:14px">
+              <a class="btn" href="resources.html">Get Help & Resources</a>
+            </div>
+          </aside>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Improved scanner logic
+    const scanBtn = document.getElementById('scanBtn');
+    const clearBtn = document.getElementById('clearBtn');
+    const msgInput = document.getElementById('message');
+    const resultArea = document.getElementById('resultArea');
+    const resultPill = document.getElementById('resultPill');
+    const dot = document.getElementById('dot');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDesc = document.getElementById('resultDesc');
+    const actionText = document.getElementById('actionText');
+
+    // Keywords and phrase patterns with weights
+    const rules = [
+      // weight 3 => Black (extremely harmful)
+      {weight:3, phrases:[
+        /\bkill\b/,/\bI will (kill|hurt)\b/,/\brape\b/,/\bgroom(ing)?\b/,/\bmeet me or else\b/,
+        /\bsexual assault\b/, /\bthreat(en|s)?\b/, /\bviolence\b/, /\bforce(d)? sex\b/, /\bunderage\b/ ,
+        /\bparents won't find out\b/, /\bkeep this secret\b/, /\byou're mine\b/, /\bno one will believe you\b/, /\bdirty little secret\b/
+        , /\bwatch your back\b/, /\bam watching you\b/, /\bI own you\b/, /\byou belong to me\b/, /\btoo young\b/,
+        /\bsexual favors\b/, /\bexplicit photos\b/, /\bthreatening messages\b/, /\bam in side your house or bed or closet\b/
+      ]},
+      // weight 2 => Red (harmful)
+      {weight:2, phrases:[
+        /\bsend (me )?(nudes|pics|photos)\b/, /\bsend (your )?(pic|photo)\b/, /\bsexual\b/, /\bforced\b/,
+        /\bslut\b/, /\bwhore\b/, /\bcall me daddy\b/, /\bdirty\b/, /\bexplicit\b/
+      ]},
+      // weight 1 => Yellow (caution)
+      {weight:1, phrases:[
+        /\bbaby\b/, /\bbabe\b/, /\bsexy\b/, /\bmiss you\b/, /\bsend me\b/, /\bhey qt or cutie\b/,
+        /\byou're so hot\b/, /\byou look good\b/, /\bcome over\b/, /\balone\b/, /\bwhat are you wearing\b/
+        , /\bcan I see you\b/, /\bprivate\b/, /\bsecret\b/, /\btrust me\b/, /\bjust between us\b/, /\bdon't tell anyone\b/
+      ]}
+    ];
+
+    function analyzeText(text){
+      const t = text.toLowerCase();
+      let score = 0;
+      let maxSeverity = 0;
+      let matches = [];
+
+      for (const rule of rules){
+        for (const pat of rule.phrases){
+          if (pat.test(t)){
+            score += rule.weight;
+            maxSeverity = Math.max(maxSeverity, rule.weight);
+            matches.push({pattern: String(pat), weight: rule.weight});
+          }
+        }
+      }
+
+      // Decision logic:
+      // If any black-weight (3) matched => BLACK
+      // else if score >= 4 => RED
+      // else if score >= 1 => YELLOW
+      // else GREEN
+      if (maxSeverity >=3) return {level:'black', score, matches};
+      if (score >= 4) return {level:'red', score, matches};
+      if (score >= 1) return {level:'yellow', score, matches};
+      return {level:'green', score, matches};
+    }
+
+    function applyResult(obj){
+      resultArea.style.display = 'block';
+      const level = obj.level;
+      // Reset classes
+      resultPill.className = 'result';
+      actionText.textContent = '';
+
+      if (level === 'green'){
+        resultPill.classList.add('green');
+        dot.style.background = 'linear-gradient(90deg,#4ad79a,#66f0b3)';
+        resultTitle.textContent = 'Safe';
+        resultDesc.textContent = 'No obvious harmful patterns detected.';
+        actionText.textContent = 'No action';
+      } else if (level === 'yellow'){
+        resultPill.classList.add('yellow');
+        dot.style.background = 'linear-gradient(90deg,#f1d46b,#f9e09a)';
+        resultTitle.textContent = 'Caution';
+        resultDesc.textContent = 'May contain suggestive or manipulative language. Stay cautious.';
+        actionText.textContent = 'Consider ignoring / keep evidence';
+      } else if (level === 'red'){
+        resultPill.classList.add('red');
+        dot.style.background = 'linear-gradient(90deg,#ff7bb3,#ff9fce)';
+        resultTitle.textContent = 'Harmful';
+        resultDesc.textContent = 'Contains harassment or pressure. Consider blocking and reporting.';
+        actionText.textContent = 'Block · Report · Keep evidence';
+      } else if (level === 'black'){
+        resultPill.classList.add('black');
+        dot.style.
+
+background = 'linear-gradient(90deg,#b56576,#7b2cbf)';
+        resultTitle.textContent = 'Extremely Harmful';
+        resultDesc.textContent = 'Explicit threats, grooming, or severe abuse detected. Prioritize safety.';
+        actionText.textContent = 'Block · Report · Seek help';
+      }
+    }
+
+    scanBtn.addEventListener('click', () => {
+      const text = msgInput.value.trim();
+      if (!text){
+        resultArea.style.display = 'block';
+        resultPill.className = 'result yellow';
+        dot.style.background = 'linear-gradient(90deg,#f1d46b,#f9e09a)';
+        resultTitle.textContent = 'Enter text';
+        resultDesc.textContent = 'Please paste a message before scanning.';
+        actionText.textContent = '';
+        return;
+      }
+
+      const res = analyzeText(text);
+      applyResult(res);
+    });
+
+    clearBtn.addEventListener('click', () => {
+      msgInput.value = '';
+      resultArea.style.display = 'none';
+    });
+
+    // Optional: keyboard shortcut for testing (Ctrl+Enter to scan)
+    msgInput.addEventListener('keydown', (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+        scanBtn.click();
+      }
+    });
+  </script>
+</body>
+</html>
